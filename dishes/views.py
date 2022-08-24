@@ -3,6 +3,9 @@ from rest_framework import permissions, response
 from .models import Dishes
 from . import serializers
 from rest_framework.decorators import action
+from rating.serializers import ReviewSerializer
+
+import dishes
 class DishesViewSet(ModelViewSet):
     queryset = Dishes.objects.all()
     permission_classes = (permissions.IsAdminUser,)
@@ -18,3 +21,17 @@ class DishesViewSet(ModelViewSet):
         else:
             permission_classes = (permissions.IsAdminUser,)
         return [permission() for permission in permission_classes]
+
+    #api/v1/products/<id>/rewiews/
+    @action(['GET', 'POST'], detail=True)
+    def reviews(self, request, pk=None):
+        dishes = self.get_object()
+        if request.method =='GET':
+            reviews =  dishes.reviews.all()
+            serializer = ReviewSerializer(reviews, many=True).data
+            return response.Response(serializer, status = 200)
+        data = request.data 
+        serializer = ReviewSerializer(data = data, context={'request':request, 'dishes':dishes})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return response.Response(serializer.data, status=201)

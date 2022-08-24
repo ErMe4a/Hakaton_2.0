@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'account',
     'category',
     'dishes',
+    'order',
+    'rating',
 ]
 
 MIDDLEWARE = [
