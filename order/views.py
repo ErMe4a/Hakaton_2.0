@@ -3,22 +3,20 @@ from . import serializers
 from .models import Order
 
 class CreateOrderView(generics.CreateAPIView):
-
     serializer_class = serializers.OrderSerializer
     permission_classes = (permissions.IsAuthenticated,)
-
+    
 class UserOrderList(views.APIView):
-    permission_classes =(permissions.IsAuthenticated, )
+    permission_classes =(permissions.IsAuthenticated,)
 
     def get(self, request):
         user = request.user
         orders = user.orders.all()
-        #orders = Order.objects.filter(user=user)
         serializer = serializers.OrderSerializer(orders, many =True).data
         return response.Response(serializer, status = 200)
 
 class UpdateOrderStatusView(views.APIView):
-    permission_classes = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAuthenticated,)
 
     def patch(self, request, pk):
         status = request.data['status']

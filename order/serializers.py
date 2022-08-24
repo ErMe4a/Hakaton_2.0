@@ -1,16 +1,19 @@
 from rest_framework import serializers
+
+from dishes.models import Dishes
 from .models import Order, OrderItem
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    dishes = serializers.ReadOnlyField(source='dishes.title')
+    dishes_title = serializers.ReadOnlyField(source='dishes.title')
+    dishes = serializers.IntegerField(write_only=True)
     class Meta:
         model = OrderItem
-        fields = ('dishes', 'quantity', 'dishes_title')
+        fields = ('dishes','quantity','dishes_title')
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
-        repr.pop('dishes')
-        return repr()
+        # repr.pop('dishes')
+        return repr
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -26,9 +29,10 @@ class OrderSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user 
         order = Order.objects.create(user = user, status='open')
         for dish in dishes:
-            dishes = dish['dishes']
+            blyudo = dish['dishes']
+            bluydo = Dishes.objects.get(pk=blyudo)
             quantity = dish['quantity']
-            OrderItem.objects.create(order=order, dishes=dishes, quantity=quantity)
+            OrderItem.objects.create(order=order, dishes=bluydo, quantity=quantity)
         return order
     
     def to_representation(self, instance):
