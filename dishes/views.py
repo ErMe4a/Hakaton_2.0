@@ -16,13 +16,18 @@ class DishesViewSet(ModelViewSet):
         if self.action == 'list':
             return serializers.DishesListSerializer
         return serializers.DishesDetailSerializer
-    
+
     def get_permissions(self):
-        if self.action == 'list':
-            permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+        # Создавать может залогиненный юзер
+        if self.action in ( 'add_to_liked', 'remove_from_liked','get_likes', ):
+            return [permissions.IsAuthenticated()]
+        # Изменять и удалять может только автор поста
+        elif self.action in ('update','create', 'partial_update', 'destroy', ):
+            return [permissions.IsAdminUser()]
+        # Просматривать могут все
         else:
-            permission_classes = (permissions.IsAdminUser,)
-        return [permission() for permission in permission_classes]
+            return [permissions.AllowAny()]
+
 
     #api/v1/products/<id>/rewiews/
     @action(['GET', 'POST'], detail=True)
