@@ -4,6 +4,7 @@ from .models import Dishes
 from . import serializers
 from rest_framework.decorators import action
 from rating.serializers import ReviewSerializer
+from comments_and_likes.serializers import CommentSerializer
 
 import dishes
 class DishesViewSet(ModelViewSet):
@@ -35,3 +36,11 @@ class DishesViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return response.Response(serializer.data, status=201)
+
+        # api/v1/posts/<id>/comments/
+    @action(['GET'], detail=True, )
+    def comments(self, request, pk):
+        dishes = self.get_object()
+        comments = dishes.comments.all()
+        serializer = CommentSerializer(comments, many=True)
+        return response.Response(serializer.data, status=200)

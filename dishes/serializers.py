@@ -1,13 +1,14 @@
 from rest_framework import serializers
 from .models import Dishes
 from django.db.models import Avg
+from comments_and_likes.serializers import CommentSerializer
 
 
 class DishesListSerializer(serializers.ModelSerializer):
-
+    comments = CommentSerializer(many=True, read_only=True)
     class Meta :
         model = Dishes
-        fields = ('id','title', 'price', 'image')
+        fields = ('id','title', 'price', 'image','comments')
 
     def to_representation(self, instance):
         repr = super().to_representation(instance)
@@ -15,6 +16,7 @@ class DishesListSerializer(serializers.ModelSerializer):
         return repr
 
 class DishesDetailSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
     class Meta: 
         model = Dishes
         fields = '__all__'
