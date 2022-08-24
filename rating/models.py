@@ -20,7 +20,7 @@ class Mark():
 
 
 class Review(models.Model):
-    product = models.ForeignKey(Dishes, on_delete=models.CASCADE, related_name='reviews')
+    dishes = models.ForeignKey(Dishes, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
     rating = models.IntegerField(choices=Mark.marks)
