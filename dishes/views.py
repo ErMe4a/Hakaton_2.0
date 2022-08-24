@@ -4,7 +4,8 @@ from .models import Dishes
 from . import serializers
 from rest_framework.decorators import action
 from rating.serializers import ReviewSerializer
-from comments_and_likes.serializers import CommentSerializer
+from comments_and_likes.serializers import CommentSerializer,LikeSerializer
+from comments_and_likes.models import Like
 
 import dishes
 class DishesViewSet(ModelViewSet):
@@ -43,4 +44,29 @@ class DishesViewSet(ModelViewSet):
         dishes = self.get_object()
         comments = dishes.comments.all()
         serializer = CommentSerializer(comments, many=True)
+        return response.Response(serializer.data, status=200)
+
+    @action(['POST'], detail=True, )
+    def add_to_liked(self, request, pk):
+        dishes = self.get_object()
+        if request.user.liked.filter(dishes=dishes).exists():
+            return response.Response('Вы уже поставили свой лайк!', status=400)
+        Like.objects.create(dishes=dishes, owner=request.user)
+        return response.Response('Вы поставили лайк', status=201)
+
+    # pai/v1/posts/<id>/remove_from_liked
+    @action(['POST'], detail=True, )
+    def remove_from_liked(self, request, pk):
+        dishes = self.get_object()
+        if not request.user.liked.filter(dishes=dishes).exists():
+            return response.Response('Вы не лайкали этот пост', status=400)
+        request.user.liked.filter(dishes=dishes).delete()
+        return response.Response('Ваш лайк удален!', status=204)
+
+    # api/v1/posts/<id>/get_likes
+    @action(['GET'], detail=True, )
+    def get_likes(self, request, pk):
+        dishes = self.get_object()
+        likes = dishes.likes.all()
+        serializer = LikeSerializer(likes, many=True)
         return response.Response(serializer.data, status=200)
