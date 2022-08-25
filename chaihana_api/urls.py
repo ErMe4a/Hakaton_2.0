@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/v1/account/',include('account.urls')),
     path('api/v1/',include('comments_and_likes.urls')),
     path('api/v1/orders/',include('order.urls')),
+    path('social-auth/', include('social_django.urls', namespace="social")),
 ]
