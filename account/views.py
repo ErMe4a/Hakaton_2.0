@@ -1,8 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
-from rest_framework import permissions
+from rest_framework import permissions,generics
+from rest_framework.filters import SearchFilter
 from . import serializers
+from .permissions import IsAccountOwner
+
 from .send_email import send_confirmation_email
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -79,3 +82,15 @@ class RestorePasswordView(APIView):
         serializer.save()
 
         return Response('Password chaneged successfully', status = 200)
+
+class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    filter_backends = (SearchFilter,)
+    search_fields = ('email',)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = serializers.UserListSerializer
+
+class UserDetailView(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.IsAuthenticated,IsAccountOwner)
+    serializer_class = serializers.UserSerializer

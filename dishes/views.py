@@ -5,7 +5,7 @@ from . import serializers
 from rest_framework.decorators import action
 from rating.serializers import ReviewSerializer
 from comments_and_likes.serializers import CommentSerializer,LikeSerializer
-from comments_and_likes.models import Like
+from comments_and_likes.models import Like,Favorites
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
@@ -87,3 +87,12 @@ class DishesViewSet(ModelViewSet):
         likes = dishes.likes.all()
         serializer = LikeSerializer(likes, many=True)
         return response.Response(serializer.data, status=200)
+
+    @action(['POST'], detail=True, )
+    def favorite_action(self, request, pk):
+        dishes= self.get_object()
+        if request.user.favorites.filter(dishes=dishes).exists():
+            request.user.favorites.filter(dishes=dishes).delete()
+            return response.Response('Убрали из избранных', status=204)
+        Favorites.objects.create(dishes=dishes, owner=request.user)
+        return response.Response('Добавлено в избранные!', status=201)

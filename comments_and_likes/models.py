@@ -17,3 +17,10 @@ class Like(models.Model):
     class Meta:
         unique_together = ['dishes','owner']
 
+
+class Favorites(models.Model):
+    dishes = models.ForeignKey(Dishes,on_delete=models.CASCADE,related_name='favorites')
+    owner = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='favorites')
+    class Meta:
+        unique_together = ['dishes','owner']
+

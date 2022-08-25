@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
+from comments_and_likes.serializers import FavoritesSerializer
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext_lazy
 
@@ -92,3 +93,16 @@ class RestorePasswordSerializer(serializers.Serializer):
         user.activation_code = ''
         user.save()
         return user
+
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id','email',)
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ('password',)
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['favorites'] = FavoritesSerializer(instance.favorites.all(),many=True).data
+        return repr
