@@ -6,11 +6,23 @@ from rest_framework.decorators import action
 from rating.serializers import ReviewSerializer
 from comments_and_likes.serializers import CommentSerializer,LikeSerializer
 from comments_and_likes.models import Like
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter
+from rest_framework.pagination import PageNumberPagination
 
 import dishes
+class StandartResultPagination(PageNumberPagination):
+    page_size = 3
+    page_query_param = 'page'
+    max_page_size = 1000
+
+
 class DishesViewSet(ModelViewSet):
     queryset = Dishes.objects.all()
-    permission_classes = (permissions.IsAdminUser,)
+    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filterset_fields = ('category',)
+    search_fields = ('title',)
+    pagination_class = StandartResultPagination
 
     def get_serializer_class(self):
         if self.action == 'list':
