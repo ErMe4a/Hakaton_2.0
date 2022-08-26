@@ -97,11 +97,11 @@ class RestorePasswordSerializer(serializers.Serializer):
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ('password',)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        exclude = ('password',)
+        fields = ('id','email','favorites')
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         repr['favorites'] = FavoritesSerializer(instance.favorites.all(),many=True).data
