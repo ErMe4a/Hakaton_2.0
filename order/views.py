@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, response, views
 from . import serializers 
 from .models import Order
+from account import permissions as per
 
 class CreateOrderView(generics.CreateAPIView):
     serializer_class = serializers.OrderSerializer
@@ -27,4 +28,26 @@ class UpdateOrderStatusView(views.APIView):
         order.save()
         serializer = serializers.OrderSerializer(order).data
         return response.Response(serializer, status = 206)
+
+class HistoryView(views.APIView):
+    permission_classes =(per.IsAccountOwner, )
+
+    def get(self, request):
+        user = request.user
+        orders = user.orders.all()
+        serializer = serializers.HistorySerializer(orders, many =True).data 
+        return response.Response(serializer, status = 200)
+
+    
+    def delete(self,request, pk):
+        user = request.user
+        user.orders.get(pk=pk).delete()
+        return response.Response('Ваш заказ удалён!', status=204)
+
+
+
+    
+
+        
+
 
