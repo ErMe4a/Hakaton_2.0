@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
+
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import permissions,generics
 from rest_framework.filters import SearchFilter
 from . import serializers
-from .permissions import IsAccountOwner
+from . import  permissions as perm
 
 from .send_email import send_confirmation_email
 from django.contrib.auth import get_user_model
@@ -92,5 +94,8 @@ class UserListView(generics.ListAPIView):
 
 class UserDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    permission_classes = (permissions.IsAuthenticated,IsAccountOwner)
+    permission_classes = (permissions.IsAuthenticated,perm.IsAccountOwner,)
     serializer_class = serializers.UserSerializer
+
+
+

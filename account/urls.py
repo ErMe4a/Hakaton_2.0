@@ -1,6 +1,9 @@
-from django.urls import path
+from django.urls import path,include
 from account import views
 from rest_framework_simplejwt.views import TokenRefreshView
+
+
+
 
 urlpatterns = [
     path('', views.UserListView.as_view()),
