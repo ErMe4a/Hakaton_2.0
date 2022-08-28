@@ -1,3 +1,4 @@
+from dataclasses import field
 from rest_framework import serializers
 
 from dishes.models import Dishes
@@ -26,7 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         dishes = validated_data.pop('positions')
-        user = self.context.get('request').user 
+        user = self.context.get('request').user
         order = Order.objects.create(user = user, status='open')
         for dish in dishes:
             blyudo = dish['dishes']
@@ -39,3 +40,16 @@ class OrderSerializer(serializers.ModelSerializer):
         repr = super().to_representation(instance)
         repr['dishes'] = OrderItemSerializer(instance.items.all(), many = True).data
         return repr
+
+class HistorySerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source = 'user.email')
+    class Meta:
+        model = Order
+        fields = ('id','user', 'dishes', 'create_at','status')
+
+    def to_representation(self, instance):
+        repr = super().to_representation(instance)
+        repr['dishes'] = OrderItemSerializer(instance.items.all(), many = True).data
+        return repr
+
+    
