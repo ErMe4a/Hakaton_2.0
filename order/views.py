@@ -6,15 +6,7 @@ from account import permissions as per
 class CreateOrderView(generics.CreateAPIView):
     serializer_class = serializers.OrderSerializer
     permission_classes = (permissions.IsAuthenticated,)
-    
-class UserOrderList(views.APIView):
-    permission_classes =(permissions.IsAuthenticated,)
 
-    def get(self, request):
-        user = request.user
-        orders = user.orders.all()
-        serializer = serializers.OrderSerializer(orders, many =True).data
-        return response.Response(serializer, status = 200)
 
 class UpdateOrderStatusView(views.APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -29,8 +21,8 @@ class UpdateOrderStatusView(views.APIView):
         serializer = serializers.OrderSerializer(order).data
         return response.Response(serializer, status = 206)
 
-class HistoryView(views.APIView):
-    permission_classes =(per.IsAccountOwner, )
+class OrderHistoryView(views.APIView):
+    permission_classes =(per.IsAccountOwner, permissions.IsAdminUser)
 
     def get(self, request):
         user = request.user
@@ -43,6 +35,7 @@ class HistoryView(views.APIView):
         user = request.user
         user.orders.get(pk=pk).delete()
         return response.Response('Ваш заказ удалён!', status=204)
+
 
 
 

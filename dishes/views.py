@@ -10,7 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 
-import dishes
+
 class StandartResultPagination(PageNumberPagination):
     page_size = 3
     page_query_param = 'page'

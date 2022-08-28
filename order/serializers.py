@@ -27,7 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         dishes = validated_data.pop('positions')
-        user = self.context.get('request').user 
+        user = self.context.get('request').user
         order = Order.objects.create(user = user, status='open')
         for dish in dishes:
             blyudo = dish['dishes']
@@ -46,7 +46,7 @@ class HistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('id','user', 'dishes', 'create_at','status')
-        
+
     def to_representation(self, instance):
         repr = super().to_representation(instance)
         repr['dishes'] = OrderItemSerializer(instance.items.all(), many = True).data

@@ -21,3 +21,4 @@ def send_reset_password(user):
     [to_email,],
     fail_silently=False
 )
+
